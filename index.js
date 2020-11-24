@@ -6,6 +6,12 @@ const app = express();
 const router = express.Router();
 
 
+const studentRouter = require("./src/routers/studentRouter");
+// const teacherRouter = require("./src/routers/teacherRouter");
+// const lessonRouter = require("./src/routers/lessonRouter");
+// const scoreRouter = require("./src/routers/scoreRouter");
+
+
 
 //body parser req json type
 app.use(bodyParser.json());
@@ -25,12 +31,6 @@ app.get("/", (req, res) => {
   res.json({ message: "Welcome to web application." });
 });
 
-//Handle error page not found
-app.use(function (req, res, next) {
-  res.status(404).send({
-    message: "Unable to find the requested resource!",
-  });
-});
 
 //Access CROS
 app.use((req, res, next) => {
@@ -41,4 +41,17 @@ app.use((req, res, next) => {
   );
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
+});
+
+//Route
+app.use("/students", studentRouter);
+// app.use("/teachers", teacherRouter);
+// app.use("/lessons", lessonRouter);
+// app.use("/assessments", scoreRouter);
+
+//Handle error page not found
+app.use(function (req, res, next) {
+  res.status(404).send({
+    message: "Unable to find the requested resource!",
+  });
 });
