@@ -156,18 +156,23 @@ exports.updateById = (req, res) => {
 exports.deleteById = (req, res) => {
   const id = req.params.id;
 
-  Model.findByIdAndRemove(id)
-    .then((result) => {
-      if (!result) {
-        res.status(404).send({
-          message: `Cannot delete student with id = ${id}. Maybe student was not found!`,
-        });
-      } else {
-        res.send({
-          message: "Deleted successfully!",
-          data: result,
-        });
+  Model.findById(id)
+    .then((_result) => {
+      if (!_result) {
+        const error = new Error(
+          `Cannot delete student with id = ${id}. Because student was not found!`
+        );
+        error.errorStatus = 404;
+        throw error;
       }
+
+      return Model.findByIdAndRemove(id);
+    })
+    .then((result) => {
+      res.send({
+        message: "Deleted successfully!",
+        data: result,
+      });
     })
     .catch((err) => {
       res.status(500).send({
