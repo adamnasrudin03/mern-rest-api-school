@@ -1,7 +1,11 @@
 const express = require("express");
+const bodyParser = require("body-parser");
 
 const app = express();
 const router = express.Router();
+
+//body parser req json type
+app.use(bodyParser.json());
 
 //Running server
 const PORT = process.env.PORT || 8082;
