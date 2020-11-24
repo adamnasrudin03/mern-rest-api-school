@@ -66,12 +66,63 @@ exports.findAll = (req, res, next) => {
         data_perPage: perPage,
         current_page: currentPage,
         total_page:
-          Math.ceil(totalItems/ perPage) == 0
+          Math.ceil(totalItems / perPage) == 0
             ? currentPage
-            : Math.ceil(totalItems/ perPage),
+            : Math.ceil(totalItems / perPage),
       });
     })
     .catch((err) => {
       next(err);
+    });
+};
+
+exports.findById = (req, res, next) => {
+  const id = req.params.id;
+  Model.findById(id)
+    .then((result) => {
+      if (!result) {
+        const error = new Error("Data not found");
+        error.errorStatus = 404;
+        throw error;
+      }
+      res.status(200).send({
+        message: `Find by id ${id} successfully`,
+        data: result,
+      });
+    })
+    .catch((err) => {
+      console.log(err.message);
+      res.status(500).send({
+        message: "Error retrieving student with id = " + id,
+      });
+    });
+};
+
+exports.updateById = (req, res) => {
+  if (!req.body) {
+    return res.status(400).send({
+      message: "Data to update can not be empty!",
+    });
+  }
+
+  const id = req.params.id;
+
+  Model.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+    .then((result) => {
+      if (!result) {
+        res.status(404).send({
+          message: `Cannot update student with id=${id}. Maybe student was not found!`,
+        });
+      } else {
+        res.status(200).send({
+          message: "Updated successfully.",
+          data: result,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message,
+      });
     });
 };
