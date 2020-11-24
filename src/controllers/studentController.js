@@ -126,3 +126,26 @@ exports.updateById = (req, res) => {
       });
     });
 };
+
+exports.deleteById = (req, res) => {
+  const id = req.params.id;
+
+  Model.findByIdAndRemove(id)
+    .then((result) => {
+      if (!result) {
+        res.status(404).send({
+          message: `Cannot delete student with id = ${id}. Maybe student was not found!`,
+        });
+      } else {
+        res.send({
+          message: "Deleted successfully!",
+          data: result,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message,
+      });
+    });
+};
