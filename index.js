@@ -1,17 +1,25 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 
 const app = express();
 const router = express.Router();
+
+
 
 //body parser req json type
 app.use(bodyParser.json());
 
 //Running server
 const PORT = process.env.PORT || 8082;
-app.listen(PORT, () => {
-  console.log(`Connection Success", Server is running on port ${PORT}.`);
-});
+mongoose
+  .connect("mongodb://localhost:27017/")
+  .then(() => {
+    app.listen(PORT, () => 
+    console.log(`Connection Success", Server is running on port ${PORT}.`));
+  })
+  .catch((err) => console.log(err));
+
 
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to web application." });
