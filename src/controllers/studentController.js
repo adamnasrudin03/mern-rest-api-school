@@ -99,6 +99,16 @@ exports.findById = (req, res, next) => {
 };
 
 exports.updateById = (req, res) => {
+  const errors = validationResult(req);
+  console.log("errors.isEmpty() ", errors.isEmpty());
+  console.log("errors ", errors);
+  if (!errors.isEmpty()) {
+    const err = new Error("Input value tidak sesuai");
+    err.errorStatus = 400;
+    err.data = errors.array();
+    throw err;
+  }
+
   if (!req.body) {
     return res.status(400).send({
       message: "Data to update can not be empty!",
@@ -106,19 +116,31 @@ exports.updateById = (req, res) => {
   }
 
   const id = req.params.id;
+  const npm = req.body.npm;
+  const name = req.body.name;
+  const gender = req.body.gender;
+  const address = req.body.address;
 
-  Model.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
-    .then((result) => {
-      if (!result) {
-        res.status(404).send({
-          message: `Cannot update student with id=${id}. Maybe student was not found!`,
-        });
-      } else {
-        res.status(200).send({
-          message: "Updated successfully.",
-          data: result,
-        });
+  Model.findById(id)
+    .then((post) => {
+      if (!post) {
+        const err = new Error("Student Not Found");
+        err.errorStatus = 404;
+        throw err;
       }
+
+      post.npm = npm;
+      post.name = name;
+      post.gender = gender;
+      post.address = address;
+
+      return post.save();
+    })
+    .then((result) => {
+      res.status(200).send({
+        message: "Updated successfully.",
+        data: result,
+      });
     })
     .catch((err) => {
       res.status(500).send({
