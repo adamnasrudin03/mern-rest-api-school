@@ -4,13 +4,14 @@ const Model = require("../models/studentModel");
 
 exports.addOne = (req, res, next) => {
   const errors = validationResult(req);
+
   const npm = req.body.npm;
   const name = req.body.name;
   const gender = req.body.gender;
   const address = req.body.address;
 
   if (!errors.isEmpty()) {
-    const err = new Error("Input value tidak sesuai");
+    const err = new Error("Incorrect input value");
     err.errorStatus = 400;
     err.data = errors.array();
     throw err;
@@ -40,7 +41,7 @@ exports.addOne = (req, res, next) => {
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while creating the Tutorial.",
+          err.message || "Some errors occurred while adding student data.",
       });
     });
 };
@@ -72,7 +73,10 @@ exports.findAll = (req, res, next) => {
       });
     })
     .catch((err) => {
-      next(err);
+      res.status(500).send({
+        message:
+          err.message || "Some errors occurred while find all student data.",
+      });
     });
 };
 
@@ -100,10 +104,9 @@ exports.findById = (req, res, next) => {
 
 exports.updateById = (req, res) => {
   const errors = validationResult(req);
-  console.log("errors.isEmpty() ", errors.isEmpty());
-  console.log("errors ", errors);
+
   if (!errors.isEmpty()) {
-    const err = new Error("Input value tidak sesuai");
+    const err = new Error("Incorrect input value");
     err.errorStatus = 400;
     err.data = errors.array();
     throw err;
@@ -144,7 +147,8 @@ exports.updateById = (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message,
+        message:
+          err.message || "Some errors occurred while updating student data.",
       });
     });
 };
@@ -167,7 +171,8 @@ exports.deleteById = (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message,
+        message:
+          err.message || "Some errors occurred while deleting student data.",
       });
     });
 };
