@@ -52,3 +52,12 @@ app.use(function (req, res, next) {
     message: "Unable to find the requested resource!",
   });
 });
+
+//Handle Error
+app.use((error, req, res, next) => {
+  const status = error.errorStatus || 500;
+  const message = error.message;
+  const data = error.data;
+
+  res.status(status).send({ message: message, data: data });
+});
