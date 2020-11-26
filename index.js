@@ -1,9 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
+const db = require("./src/models");
 
 const app = express();
-const router = express.Router();
+const Role = db.role;
 
 const studentRouter = require("./src/routers/studentRouter");
 const teacherRouter = require("./src/routers/teacherRouter");
@@ -12,14 +12,40 @@ const lessonRouter = require("./src/routers/lessonRouter");
 //body parser req json type
 app.use(bodyParser.json());
 
+function initialRole() {
+  Role.estimatedDocumentCount((err, count) => {
+    if (!err && count === 0) {
+      new Role({
+        name: "user",
+      }).save((err) => {
+        if (err) {
+          console.log("error", err);
+        }
+
+        console.log("added 'user' to roles collection");
+      });
+
+      new Role({
+        name: "admin",
+      }).save((err) => {
+        if (err) {
+          console.log("error", err);
+        }
+
+        console.log("added 'admin' to roles collection");
+      });
+    }
+  });
+}
 //Running server
 const PORT = process.env.PORT || 8082;
-mongoose
+db.mongoose
   .connect("mongodb://localhost:27017/school")
   .then(() => {
     app.listen(PORT, () =>
       console.log(`Connection Success", Server is running on port ${PORT}.`)
     );
+    // initialRole();
   })
   .catch((err) => {
     console.log("Error name : ", err.name);
