@@ -97,7 +97,7 @@ exports.findById = (req, res, next) => {
     .catch((err) => {
       console.log(err.message);
       res.status(500).send({
-        message: "Error retrieving student with id = " + id,
+        message: err.message || "Error retrieving student with id = " + id,
       });
     });
 };
