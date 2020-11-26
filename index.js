@@ -6,6 +6,7 @@ const app = express();
 const Role = db.role;
 
 const authRouter = require("./src/routers/authRouter");
+const userRouter = require("./src/routers/userRouter");
 const studentRouter = require("./src/routers/studentRouter");
 const teacherRouter = require("./src/routers/teacherRouter");
 const lessonRouter = require("./src/routers/lessonRouter");
@@ -69,7 +70,8 @@ app.use((req, res, next) => {
 });
 
 //Route
-app.use("/users", authRouter);
+app.use("/authorization", authRouter);
+app.use("/users", userRouter);
 app.use("/students", studentRouter);
 app.use("/teachers", teacherRouter);
 app.use("/lessons", lessonRouter);
