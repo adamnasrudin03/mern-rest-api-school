@@ -1,3 +1,4 @@
+const { validationResult } = require("express-validator");
 const config = require("../configs/authConfig");
 const db = require("../models");
 const User = db.user;
@@ -7,6 +8,14 @@ var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
 exports.signup = (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    const err = new Error("Input value tidak sesuai");
+    err.errorStatus = 400;
+    err.data = errors.array();
+    throw err;
+  }
   const user = new User({
     username: req.body.username,
     email: req.body.email,
