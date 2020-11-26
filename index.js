@@ -46,7 +46,7 @@ db.mongoose
     app.listen(PORT, () =>
       console.log(`Connection Success", Server is running on port ${PORT}.`)
     );
-    // initialRole();
+    initialRole();
   })
   .catch((err) => {
     console.log("Error name : ", err.name);
