@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 //Running server
 const PORT = process.env.PORT || 8082;
 mongoose
-  .connect("mongodb://localhost:27017/")
+  .connect("mongodb://localhost:27017/school")
   .then(() => {
     app.listen(PORT, () =>
       console.log(`Connection Success", Server is running on port ${PORT}.`)
