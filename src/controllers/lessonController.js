@@ -1,6 +1,7 @@
 const { validationResult } = require("express-validator");
 
-const Model = require("../models/lessonModel");
+const db = require("../models");
+const Model = db.lesson;
 
 exports.addOne = (req, res, next) => {
   const errors = validationResult(req);
