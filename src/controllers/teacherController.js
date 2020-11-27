@@ -52,11 +52,22 @@ exports.findAll = (req, res, next) => {
   const perPage = parseInt(req.query.perPage) || 2;
   let totalItems;
 
-  Model.find()
+  let nip = req.query.nip;
+  let name = req.query.name;
+  let gender = req.query.gender;
+  let address = req.query.description;
+
+  npm = nip ? { nip: { $regex: `${nip}` } } : null;
+  name = name ? { name: { $regex: `${name}` } } : null;
+  gender = gender ? { gender: { $regex: `${gender}` } } : null;
+  address = address ? { address: { $regex: `${address}` } } : null;
+  const search = nip || name || gender || address;
+
+  Model.find(search)
     .countDocuments()
     .then((count) => {
       totalItems = count;
-      return Model.find()
+      return Model.find(search)
         .skip((parseInt(currentPage) - 1) * parseInt(perPage))
         .limit(parseInt(perPage));
     })

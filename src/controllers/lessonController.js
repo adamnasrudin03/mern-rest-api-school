@@ -52,11 +52,26 @@ exports.findAll = (req, res, next) => {
   const perPage = parseInt(req.query.perPage) || 2;
   let totalItems;
 
-  Model.find()
+  let kodeLesson = req.query.kodeLesson;
+  let name = req.query.name;
+  let totalChapter = req.query.totalChapter;
+  let description = req.query.description;
+
+  kodeLesson = kodeLesson ? { kodeLesson: { $regex: `${kodeLesson}` } } : null;
+  name = name ? { name: { $regex: `${name}` } } : null;
+  totalChapter = totalChapter
+    ? { total_chapter: { $regex: `${totalChapter}` } }
+    : null;
+  description = description
+    ? { description: { $regex: `${description}` } }
+    : null;
+  const search = kodeLesson || name || totalChapter || description;
+
+  Model.find(search)
     .countDocuments()
     .then((count) => {
       totalItems = count;
-      return Model.find()
+      return Model.find(search)
         .skip((parseInt(currentPage) - 1) * parseInt(perPage))
         .limit(parseInt(perPage));
     })
