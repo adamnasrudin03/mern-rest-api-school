@@ -10,42 +10,53 @@ exports.findAll = (req, res, next) => {
   const perPage = parseInt(req.query.perPage) || 2;
   let totalItems;
 
-  Model.find()
+  let username = req.query.username;
+  let email = req.query.email;
+
+  username = username ? { username: { $regex: `${username}` } } : null;
+  email = email ? { email: { $regex: `${email}` } } : null;
+  const search = username || email;
+
+  Model.find(search)
     .countDocuments()
     .then((count) => {
       totalItems = count;
-      return Model.find()
+      return Model.find(search)
         .skip((parseInt(currentPage) - 1) * parseInt(perPage))
         .limit(parseInt(perPage));
     })
     .then((result) => {
-      const newData = [];
-      const roleName = [];
+      const forLoop = async (_) => {
+        let newData = [];
+        let roleName = [];
+        
+        //get role name
+        for (let i = 0; i < result.length; i++) {
+          await Role.findById(result[i].roles).then((dataRole) => {
+            roleName.push("ROLE_" + dataRole.name.toUpperCase());
+          });
+        }
+        //change data roles and password
+        for (let j = 0; j < result.length; j++) {
+          result[j].password = "access not accepted";
+          result[j].roles[0] = roleName[j];
+          newData.push(result[j]);
+        }
 
-      for (let i = 0; i < result.length; i++) {
-        Role.findById(result[i].roles).then((dataRole) => {
-          roleName.push(dataRole.name);
+        res.status(200).send({
+          message: "Find All successfully",
+          data: newData,
+          total_data: totalItems,
+          data_perPage: perPage,
+          current_page: currentPage,
+          total_page:
+            Math.ceil(totalItems / perPage) == 0
+              ? currentPage
+              : Math.ceil(totalItems / perPage),
         });
-      }
-      for (let j = 0; j < result.length; j++) {
-        result[j].roles = roleName[j];
-        console.log(" roleName, ", roleName[j]);
+      };
 
-        result[j].password = "access not accepted";
-        newData.push(result[j]);
-      }
-
-      res.status(200).send({
-        message: "Find All successfully",
-        data: newData,
-        total_data: totalItems,
-        data_perPage: perPage,
-        current_page: currentPage,
-        total_page:
-          Math.ceil(totalItems / perPage) == 0
-            ? currentPage
-            : Math.ceil(totalItems / perPage),
-      });
+      forLoop();
     })
     .catch((err) => {
       res.status(500).send({
